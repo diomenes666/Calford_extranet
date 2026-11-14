@@ -369,7 +369,10 @@ function OrderRow({ o, idx, upd, showErrors, onRemove }: {
               title="Lo cobrado en tu tarjeta (obligatorio)"
               className={cn(cell, "pl-6 tabular-nums lg:pl-5 lg:border-accent/40 lg:bg-accent/5", err(!(parseFloat(o.usd) > 0)))}
               value={o.usd}
-              onChange={(e) => upd(o.id, { usd: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value;
+                upd(o.id, { usd: val });
+              }}
             />
           </div>
         ) : (
