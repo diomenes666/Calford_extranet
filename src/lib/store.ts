@@ -118,6 +118,16 @@ export const actions = {
     return { promoted, earned };
   },
 
+  /** Promotes a specific draft pre-guía to Procesado without altering its orders or trackings. */
+  processPreguia(id: string) {
+    const target = state.preguias.find((p) => p.id === id);
+    if (!target || target.status !== "Borrador") return null;
+    const preguias = state.preguias.map((p) => (p.id === id ? { ...p, status: "Procesado" as const } : p));
+    const earned = pointsFor(target.totalUsd);
+    set({ ...state, preguias, points: state.points + earned });
+    return { preguia: { ...target, status: "Procesado" as const }, earned };
+  },
+
   updateGifts(gifts: Gift[], giftsMonth: string) { set({ ...state, gifts, giftsMonth }); },
   addPoints(n: number) { set({ ...state, points: Math.max(0, state.points + n) }); },
   redeem(key: string) { set({ ...state, redeemed: [...state.redeemed, key] }); },
