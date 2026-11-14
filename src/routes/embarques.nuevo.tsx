@@ -321,7 +321,6 @@ function OrderRow({ o, idx, upd, showErrors, onRemove }: {
   const approx = foreign && parseFloat(o.amount) > 0 ? (parseFloat(o.amount) * USD_RATE[o.currency]).toFixed(2) : null;
 
   const commitTracking = (rawVal = trk) => {
-    // Allow same tracking across different orders, only avoid duplicates inside the same order
     const list = splitTrackings(rawVal).filter((t, i, a) => a.indexOf(t) === i && !o.trackings.includes(t));
     if (!list.length) {
       setTrk("");
@@ -391,14 +390,14 @@ function OrderRow({ o, idx, upd, showErrors, onRemove }: {
             enterKeyHint="done"
             onChange={(e) => {
               const val = e.target.value;
-              if (/[\s,;\n]+$/.test(val) && val.trim().length > 0) {
+              if (/^[\s,;\n]+$/.test(val) && val.trim().length > 0) {
                 commitTracking(val);
               } else {
                 setTrk(val);
               }
             }}
             onBlur={() => { if (trk.trim()) commitTracking(trk); }}
-            placeholder="Pega tracking y presiona Enter…"
+            placeholder="Pega o escribe tracking..."
             aria-label={`Tracking orden ${idx + 1}`}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -406,9 +405,12 @@ function OrderRow({ o, idx, upd, showErrors, onRemove }: {
                 commitTracking(trk);
               }
             }}
-            className="w-full min-w-0 bg-transparent px-1.5 py-1 font-mono text-xs outline-none"
+            className="w-full min-w-0 bg-transparent px-1.5 py-1 font-mono text-xs outline-none placeholder:text-muted-foreground/70"
           />
         </div>
+        <span className="mt-1 block text-[10px] text-muted-foreground lg:hidden">
+          💡 Pega el código y pulsa enter o fuera
+        </span>
       </Cell>
       <Cell label="Factura" className="col-span-2 lg:col-span-1">
         <input ref={fileRef} type="file" accept=".pdf,image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) upd(o.id, { invoice: f.name }); e.target.value = ""; }} />
